@@ -1,0 +1,485 @@
+* {
+  margin: 0px;
+  padding: 0px;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+@media (min-width: 1300px) {
+  .container,
+  .container-lg,
+  .container-md,
+  .container-sm {
+    max-width: 1200px;
+  }
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+.bg-purple {
+  background-color: #bb2649;
+}
+
+.headerWrapper .top-strip {
+  padding: 8px 0px;
+}
+
+.headerWrapper .top-strip p {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.headerWrapper .header {
+  width: 100%;
+  height: auto;
+  padding: 25px;
+  font-weight: 500;
+}
+
+.header .row {
+  display: flex;
+  align-items: center;
+}
+
+.logoWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.logoWrapper img {
+  width: 80%;
+  height: auto;
+}
+
+
+.headerSearch {
+  width: 70%;
+  height: 60px;
+  background: #f3f4f7;
+  padding: 10px;
+  position: relative;
+  margin-left: 15px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px !important;
+}
+
+.headerSearch input {
+  background: transparent !important;
+  outline: none !important;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.8);
+  width: 100%;
+  height: 40px;
+  border: 0px !important;
+  padding: 0px 20px !important;
+}
+
+.headerSearch button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 100;
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+}
+.part-3 .circle,
+.part-3 .message,
+.part-3 .post {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  margin-left: 15px;
+  color: #333;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  box-shadow: none;
+}
+
+.part-3 .circle:hover,
+.part-3 .message:hover,
+.part-3 .post:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.headerSearch button svg {
+  font-size: 25px;
+}
+
+.part-3 .circle {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-left: 15px;
+  color: #333;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  box-shadow: none;
+}
+
+.part-3 .message {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-left: 15px;
+  color: #333;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  box-shadow: none;
+}
+
+.part-3 .post {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-left: 15px;
+  color: #333;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  box-shadow: none;
+}
+
+nav .allCatTab {
+  background: #ff4d79;
+  padding: 8px 30px !important;
+  border-radius: 30px !important;
+  border: transparent !important;
+  margin-top: 15px !important;
+}
+
+nav .allCatTab * {
+  color: #fff !important;
+}
+
+nav .allCatTab:hover {
+  background-color: #ff4d79 !important;
+}
+
+nav .allCatTab .text {
+  font-weight: 600 !important;
+}
+
+nav .allCatTab svg{
+  font-size: 20px !important;
+}
+
+nav .allCatTab .icon1 svg{
+  font-size: 20px !important;
+}
+
+nav .allCatTab .icon2 svg{
+  font-size: 15px !important;
+}
+
+.navPart2 {
+  padding: 15px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.navPart2 .list {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.navPart2 .list-inline-item {
+  list-style: none;
+}
+
+.navPart2 p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.navPart2 .list-inline-item:not(:first-child) {
+  border-radius: 6px;
+  padding: 6px 12px;
+  transition: all 0.2s ease-in-out;
+}
+
+.navPart2 a {
+  text-decoration: none;
+  color: black;
+}
+
+nav .navPart2 ul li a:hover{
+  background: #f0faff;
+  color: #ff4d79; 
+}
+
+.navigation-wrapper {
+  background-color: #ffffff;
+  padding: 0;
+  box-shadow: none;
+  border-radius: 0;
+  margin-bottom: 0;
+  border-right: 1px solid #e0e0e0; 
+}
+
+.navigation-wrapper .container {
+  padding: 0;
+  max-width: 100%;
+}
+
+.main-nav {
+  padding-left: 200px; 
+  padding-top: 15px;
+}
+
+.main-nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+  .main-nav li {
+  padding: 10px 16px;
+  margin-bottom: 6px;
+  background-color: transparent; 
+  border-radius: 0;
+  color: #333;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: block;
+  width: fit-content;
+  position: relative;
+}
+
+.main-nav li:hover {
+  background-color: rgba(255, 77, 121, 0.05);
+  color: #ff4d79;
+  transform: translateX(4px);
+  border-left: 3px solid #ff4d79;
+}
+
+.scrollable-category {
+  overflow-y: auto; 
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
+
+.scrollable-category::-webkit-scrollbar {
+  display: none; 
+}
+
+.scrollable-category ul {
+  width: fit-content;
+  padding: 0;
+  margin: 0;
+  height: calc(100vh - 200px); 
+}
+
+.navigation-container {
+  height: 100%;
+}
+
+.category-nav {
+  height: 100%;
+  width: 100%;
+}
+
+.login-container {
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 30px 25px;
+  background: #ffffff;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  font-family: 'Poppins', 'Helvetica', 'Arial', sans-serif;
+}
+
+.login-container h2 {
+  color: #bb2649;
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 25px;
+  font-size: 24px;
+}
+
+.login-container .form-group {
+  margin-bottom: 20px;
+}
+
+.login-container .form-control {
+  height: 45px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  padding: 10px 15px;
+  font-size: 14px;
+}
+
+.login-container .form-control:focus {
+  border-color: #bb2649;
+  box-shadow: 0 0 0 2px rgba(187, 38, 73, 0.2);
+  outline: none;
+}
+
+.login-container .btn-primary {
+  width: 100%;
+  height: 45px;
+  background-color: #bb2649;
+  border-color: #bb2649;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 16px;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.login-container .btn-primary:hover {
+  background-color: #9a1d3a;
+  border-color: #9a1d3a;
+}
+
+.login-container p {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #666;
+}
+
+.post-creation {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  font-family: "Poppins", sans-serif;
+}
+
+.progress-steps {
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 30px;
+  color: #bb2649;
+  font-size: 18px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.step h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.step input[type="text"],
+.step input[type="number"],
+.step select,
+.step textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  transition: 0.3s;
+}
+
+.step input[type="file"] {
+  font-size: 14px;
+}
+
+.step textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.step input:focus,
+.step select:focus,
+.step textarea:focus {
+  border-color: #bb2649;
+  box-shadow: 0 0 0 2px rgba(187, 38, 73, 0.2);
+}
+
+.error {
+  border-color: #ff4d79;
+}
+
+.error-message {
+  color: #ff4d79;
+  font-size: 13px;
+  margin-top: -15px;
+}
+
+.preview-image {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin-top: 10px;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.step button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background-color: #bb2649;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.step button:hover {
+  background-color: #9a1d3a;
+}
+
+.step button.disabled {
+  background-color: #ddd;
+  color: #999;
+  cursor: not-allowed;
+}
+
+label {
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
