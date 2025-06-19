@@ -3,34 +3,53 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import "./index.css";
 
+// Configure axios to include credentials (cookies) with requests
+axios.defaults.withCredentials = true;
+
 export default function Profile() {
   const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
-    if (!isLoggedIn) {
-      navigate("/login");
-      return;
-    }
-
-    axios
-      .get("http://localhost:8081/api/profile")
-      .then((response) => {
+    const checkAuthAndFetchProfile = async () => {
+      try {
+        // Try to fetch profile - this will fail if not authenticated
+        const response = await axios.get("http://localhost:8081/api/profile");
+        
         if (response.data.status === "success") {
           setProfile(response.data.data);
         } else {
-          console.error("Failed to fetch profile");
+          // Not authenticated, redirect to login
+          localStorage.removeItem("isLoggedIn");
+          navigate("/login");
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching profile:", error);
-      });
+        // If 401 (unauthorized), redirect to login
+        if (error.response && error.response.status === 401) {
+          localStorage.removeItem("isLoggedIn");
+          navigate("/login");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuthAndFetchProfile();
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:8081/logout");
+      localStorage.removeItem("isLoggedIn");
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Even if logout fails on server, clear local state
+      localStorage.removeItem("isLoggedIn");
+      navigate("/login");
+    }
   };
 
   const handleHome = () => {
@@ -39,6 +58,7 @@ export default function Profile() {
 
   const handleDelete = async (postId) => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
+    
     try {
       const response = await axios.delete(`http://localhost:8081/api/posts/${postId}`);
       if (response.data.status === "success") {
@@ -48,13 +68,33 @@ export default function Profile() {
           adsPosted: prev.adsPosted - 1
         }));
       } else {
-        alert("Failed to delete post");
+        alert(response.data.message || "Failed to delete post");
       }
     } catch (error) {
       console.error("Delete error:", error);
-      alert("Error deleting post");
+      if (error.response && error.response.status === 401) {
+        // Session expired, redirect to login
+        localStorage.removeItem("isLoggedIn");
+        navigate("/login");
+      } else {
+        alert("Error deleting post");
+      }
     }
   };
+
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "400px" }}>
+        <div className="text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-2">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   const userData = profile || {
     fname: "Loading...",
@@ -106,7 +146,6 @@ export default function Profile() {
             <div className="card-header" style={headerStyle}>My Ads</div>
             <div className="card-body">
               <p className="text-muted">Your posted ads will appear here. You can edit or delete them.</p>
-
               {userData.posts.length > 0 ? (
                 <div className="row">
                   {userData.posts.map((post) => (
@@ -140,10 +179,9 @@ export default function Profile() {
                 </div>
               ) : (
                 <div className="alert alert-info">
-                  ℹ️ You haven’t posted any ads yet. Start by creating your first ad!
+                  ℹ️ You haven't posted any ads yet. Start by creating your first ad!
                 </div>
               )}
-
               <Link to="/post" className="btn mt-3" style={btnStyle("#bb2649")}>
                 ➕ Create New Ad
               </Link>
@@ -155,8 +193,7 @@ export default function Profile() {
   );
 }
 
-// Inline style objects and functions
-
+// Inline style objects and functions (same as before)
 const cardStyle = {
   borderRadius: "16px",
   boxShadow: "0 8px 20px rgba(0,0,0,0.05)",
@@ -217,3 +254,6 @@ const btnOutlineStyle = (color) => ({
   cursor: "pointer",
   transition: "background-color 0.3s"
 });
+
+// Updated Login Component (you'll need to update your login component too)
+// Make sure to set axios.defaults.withCredentials = true in your login component as well
