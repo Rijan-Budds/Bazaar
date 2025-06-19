@@ -48,12 +48,6 @@ const Header = () => {
               <div className="col-sm-10">
                 <div className="d-flex align-items-center">
                   <SearchBox />
-
-                  <div className="part-3 headerNotify ml-2">
-                    <Button className="message" onClick={handleChats}>
-                      <FaMessage />
-                    </Button>
-                  </div>
                   <div className="part-3 headerPost ml-4">
                     <Button className="post" onClick={handlePost}>
                       <IoIosAddCircle />

@@ -101,7 +101,6 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Right: My Ads */}
         <div className="col-md-8">
           <div className="card" style={cardStyle}>
             <div className="card-header" style={headerStyle}>My Ads</div>

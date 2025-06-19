@@ -5,14 +5,13 @@ import Header from "./Components/Header";
 import "./App.css";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
-import Chats from "./Pages/Chats";
 import Post from "./Pages/Post";
 import Profile from "./Pages/Profile";
 import Edit from "./Pages/Edit";
 
 function LayoutWrapper({children}){
   const location = useLocation();
-  const noHeaderRoutes = ["/login", "/chats", "/post", "/profile", "/register", "/edit-post"];
+  const noHeaderRoutes = ["/login", "/post", "/profile", "/register", "/edit-post"];
 
   const showHeader = !noHeaderRoutes.includes(location.pathname);
 
@@ -31,7 +30,6 @@ export default function App(){
     <Routes>
       <Route path="/" exact={true} element={<Home />} />
       <Route path="/login" exact={true} element={<Login />} />
-      <Route path="/chats" exact={true} element={<Chats />} />
       <Route path="/post" exact={true} element={<Post />} />
       <Route path="/profile" exact={true} element={<Profile />} />
       <Route path="/register" exact={true} element={<Register />} />
