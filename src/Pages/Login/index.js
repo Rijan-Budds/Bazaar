@@ -3,7 +3,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-// Configure axios to send cookies with requests
 axios.defaults.withCredentials = true;
 
 export default function Login() {
@@ -15,7 +14,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Check if user is already logged in
     const checkAuthStatus = async () => {
       try {
         const response = await axios.get("http://localhost:8081/api/auth/status");
@@ -24,7 +22,6 @@ export default function Login() {
         }
       } catch (error) {
         console.error("Error checking auth status:", error);
-        // If error, assume not authenticated and continue with login page
       }
     };
 
@@ -44,7 +41,6 @@ export default function Login() {
     setError("");
     setLoading(true);
 
-    // Client-side validation
     if (!fname.trim() || !username.trim() || !password.trim()) {
       setError("All fields are required");
       setLoading(false);
@@ -61,14 +57,11 @@ export default function Login() {
       console.log("Login response:", response.data);
 
       if (response.data.status === "success") {
-        // Store login status and user info in localStorage for client-side checks
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("user", JSON.stringify(response.data.user));
         
-        // Navigate to profile page
         navigate("/profile");
       } else {
-        // Handle different error types
         if (response.data.status === "no_record") {
           setError("Invalid credentials. Please check your username and password.");
         } else {
@@ -78,13 +71,10 @@ export default function Login() {
     } catch (error) {
       console.error("Login error:", error);
       if (error.response) {
-        // Server responded with error status
         setError(error.response.data.message || "Login failed. Please try again.");
       } else if (error.request) {
-        // Request made but no response
         setError("Unable to connect to server. Please check your connection.");
       } else {
-        // Something else happened
         setError("An unexpected error occurred. Please try again.");
       }
     } finally {
@@ -209,7 +199,6 @@ export default function Login() {
   );
 }
 
-// Styles
 const containerStyle = {
   backgroundColor: "#ffffff",
   padding: "40px",

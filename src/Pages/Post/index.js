@@ -25,7 +25,6 @@ const PostCreation = () => {
     if (!isLoggedIn) {
       navigate("/login");
     } else if (userData) {
-      // Set the user_id from logged-in user
       setPost(prev => ({ ...prev, user_id: userData.id }));
     }
   }, [navigate]);
@@ -95,7 +94,6 @@ const PostCreation = () => {
     if (validateStep(3)) {
       const formData = new FormData();
       
-      // Append all fields including user_id
       Object.keys(post).forEach((key) => {
         if (key === "negotiable") {
           formData.append(key, post[key] ? "1" : "0");

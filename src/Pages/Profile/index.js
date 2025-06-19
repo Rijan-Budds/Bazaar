@@ -3,7 +3,6 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import "./index.css";
 
-// Configure axios to include credentials (cookies) with requests
 axios.defaults.withCredentials = true;
 
 export default function Profile() {
@@ -14,19 +13,16 @@ export default function Profile() {
   useEffect(() => {
     const checkAuthAndFetchProfile = async () => {
       try {
-        // Try to fetch profile - this will fail if not authenticated
         const response = await axios.get("http://localhost:8081/api/profile");
         
         if (response.data.status === "success") {
           setProfile(response.data.data);
         } else {
-          // Not authenticated, redirect to login
           localStorage.removeItem("isLoggedIn");
           navigate("/login");
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
-        // If 401 (unauthorized), redirect to login
         if (error.response && error.response.status === 401) {
           localStorage.removeItem("isLoggedIn");
           navigate("/login");
@@ -46,7 +42,6 @@ export default function Profile() {
       navigate("/login");
     } catch (error) {
       console.error("Logout error:", error);
-      // Even if logout fails on server, clear local state
       localStorage.removeItem("isLoggedIn");
       navigate("/login");
     }
@@ -73,7 +68,6 @@ export default function Profile() {
     } catch (error) {
       console.error("Delete error:", error);
       if (error.response && error.response.status === 401) {
-        // Session expired, redirect to login
         localStorage.removeItem("isLoggedIn");
         navigate("/login");
       } else {
@@ -82,7 +76,6 @@ export default function Profile() {
     }
   };
 
-  // Show loading spinner while checking authentication
   if (loading) {
     return (
       <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "400px" }}>
@@ -105,7 +98,6 @@ export default function Profile() {
 
   return (
     <div className="container" style={{ padding: "40px 15px", fontFamily: "'Poppins', sans-serif" }}>
-      {/* Top Buttons */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <button className="btn btn-outline" onClick={handleHome} style={btnOutlineStyle("#bb2649")}>
           🏠 Home
@@ -117,7 +109,6 @@ export default function Profile() {
       </div>
 
       <div className="row">
-        {/* Left: User Info */}
         <div className="col-md-4 mb-4">
           <div className="card" style={cardStyle}>
             <div className="card-header" style={headerStyle}>User Information</div>
@@ -193,7 +184,6 @@ export default function Profile() {
   );
 }
 
-// Inline style objects and functions (same as before)
 const cardStyle = {
   borderRadius: "16px",
   boxShadow: "0 8px 20px rgba(0,0,0,0.05)",
@@ -254,6 +244,3 @@ const btnOutlineStyle = (color) => ({
   cursor: "pointer",
   transition: "background-color 0.3s"
 });
-
-// Updated Login Component (you'll need to update your login component too)
-// Make sure to set axios.defaults.withCredentials = true in your login component as well

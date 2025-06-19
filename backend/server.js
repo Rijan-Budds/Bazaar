@@ -9,29 +9,25 @@ const fs = require('fs');
 const app = express();
 app.use(express.json());
 
-// Session configuration
 app.use(session({
   secret: 'your_secret_key_change_this_in_production',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, // Set to true in production with HTTPS
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    secure: false, 
+    maxAge: 24 * 60 * 60 * 1000, 
     httpOnly: true
   }
 }));
 
-// CORS configuration - important to allow credentials
 const corsOptions = {
   origin: 'http://localhost:3000',
-  credentials: true, // This is crucial for sessions to work
+  credentials: true, 
 };
 app.use(cors(corsOptions));
 
-// Static file serving
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Database connection with reconnection handling
 let db;
 function handleDbConnection() {
   db = mysql.createConnection({
@@ -60,7 +56,6 @@ function handleDbConnection() {
 }
 handleDbConnection();
 
-// Authentication middleware
 const requireAuth = (req, res, next) => {
   if (!req.session.user) {
     return res.status(401).json({ 
@@ -71,11 +66,9 @@ const requireAuth = (req, res, next) => {
   next();
 };
 
-// LOGIN ENDPOINT - Updated with session management
 app.post('/login', (req, res) => {
   const { fname, username, password } = req.body;
   
-  // Validate input
   if (!fname || !username || !password) {
     return res.json({ 
       status: "error", 
@@ -91,7 +84,6 @@ app.post('/login', (req, res) => {
     }
     
     if (data.length > 0) {
-      // Store user info in session
       req.session.user = {
         id: data[0].id,
         fname: data[0].fname,
@@ -118,7 +110,6 @@ app.post('/login', (req, res) => {
   });
 });
 
-// LOGOUT ENDPOINT - New endpoint to properly handle logout
 app.post('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -130,11 +121,9 @@ app.post('/logout', (req, res) => {
   });
 });
 
-// REGISTER ENDPOINT - Same as before but with better error handling
 app.post('/register', (req, res) => {
   const { fname, username, password } = req.body;
   
-  // Validate input
   if (!fname || !username || !password) {
     return res.json({ 
       status: "error", 
@@ -170,7 +159,6 @@ app.post('/register', (req, res) => {
   });
 });
 
-// MULTER SETUP - File upload configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadPath = 'uploads/';
@@ -189,7 +177,7 @@ const storage = multer.diskStorage({
 const upload = multer({ 
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit
+    fileSize: 5 * 1024 * 1024 
   },
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif/;
@@ -204,13 +192,11 @@ const upload = multer({
   }
 });
 
-// CREATE POST ENDPOINT - Updated with proper authentication
 app.post('/api/posts', requireAuth, upload.single('photo'), (req, res) => {
   const { title, category, conditions, description, price, negotiable, location } = req.body;
   const photo = req.file ? req.file.filename : null;
-  const userId = req.session.user.id; // Get from session
+  const userId = req.session.user.id; 
 
-  // Validate required fields
   if (!title || !category || !conditions || !description || !price || !photo) {
     return res.json({ 
       status: "error", 
@@ -251,7 +237,6 @@ app.post('/api/posts', requireAuth, upload.single('photo'), (req, res) => {
   });
 });
 
-// GET SINGLE POST BY ID - Updated with better error handling
 app.get('/api/posts/:id', (req, res) => {
   const postId = req.params.id;
   
@@ -292,14 +277,12 @@ app.get('/api/posts/:id', (req, res) => {
   });
 });
 
-// UPDATE POST ENDPOINT - Updated with ownership verification
 app.put('/api/posts/:id', requireAuth, upload.single('photo'), (req, res) => {
   const postId = req.params.id;
   const userId = req.session.user.id;
   const { title, category, conditions, description, price, negotiable, location } = req.body;
   const newPhoto = req.file ? req.file.filename : null;
 
-  // Validate required fields
   if (!title || !category || !conditions || !description || !price) {
     return res.json({ 
       status: "error", 
@@ -307,7 +290,6 @@ app.put('/api/posts/:id', requireAuth, upload.single('photo'), (req, res) => {
     });
   }
 
-  // First, get the current post and verify ownership
   const getCurrentPostSql = "SELECT photo FROM posts WHERE id = ? AND user_id = ?";
   
   db.query(getCurrentPostSql, [postId, userId], (err, currentResult) => {
@@ -324,7 +306,7 @@ app.put('/api/posts/:id', requireAuth, upload.single('photo'), (req, res) => {
     }
 
     const oldPhoto = currentResult[0].photo;
-    const photoToUse = newPhoto || oldPhoto; // Use new photo if uploaded, otherwise keep old one
+    const photoToUse = newPhoto || oldPhoto; 
 
     const updateSql = `
       UPDATE posts 
@@ -355,7 +337,6 @@ app.put('/api/posts/:id', requireAuth, upload.single('photo'), (req, res) => {
         });
       }
 
-      // If we uploaded a new photo and there was an old one, delete the old photo file
       if (newPhoto && oldPhoto && oldPhoto !== newPhoto) {
         const oldPhotoPath = path.join(__dirname, 'uploads', oldPhoto);
         if (fs.existsSync(oldPhotoPath)) {
@@ -376,7 +357,6 @@ app.put('/api/posts/:id', requireAuth, upload.single('photo'), (req, res) => {
   });
 });
 
-// GET ALL POSTS - Same as before
 app.get('/api/posts', (req, res) => {
   const sql = `
     SELECT posts.*, login.fname as seller_name
@@ -397,12 +377,10 @@ app.get('/api/posts', (req, res) => {
   });
 });
 
-// DELETE POST ENDPOINT - Updated with ownership verification
 app.delete('/api/posts/:id', requireAuth, (req, res) => {
   const postId = req.params.id;
   const userId = req.session.user.id;
   
-  // First check if the post belongs to the logged-in user
   const checkOwnershipSql = "SELECT photo FROM posts WHERE id = ? AND user_id = ?";
   
   db.query(checkOwnershipSql, [postId, userId], (err, result) => {
@@ -427,7 +405,6 @@ app.delete('/api/posts/:id', requireAuth, (req, res) => {
         return res.json({ status: "error", message: "Failed to delete post" });
       }
 
-      // Delete the photo file if it exists
       if (photoFilename) {
         const photoPath = path.join(__dirname, 'uploads', photoFilename);
         if (fs.existsSync(photoPath)) {
@@ -447,9 +424,8 @@ app.delete('/api/posts/:id', requireAuth, (req, res) => {
   });
 });
 
-// GET PROFILE + USER'S POSTS - Updated with proper authentication
 app.get('/api/profile', requireAuth, (req, res) => {
-  const userId = req.session.user.id; // Get from session
+  const userId = req.session.user.id; 
   
   const userSql = "SELECT id, fname, username as email FROM login WHERE id = ?";
   const postsSql = "SELECT * FROM posts WHERE user_id = ? ORDER BY created_at DESC";
@@ -493,7 +469,6 @@ app.get('/api/profile', requireAuth, (req, res) => {
   });
 });
 
-// CHECK AUTHENTICATION STATUS - New endpoint to check if user is logged in
 app.get('/api/auth/status', (req, res) => {
   if (req.session.user) {
     return res.json({ 
@@ -509,7 +484,6 @@ app.get('/api/auth/status', (req, res) => {
   }
 });
 
-// Error handling middleware
 app.use((error, req, res, next) => {
   if (error instanceof multer.MulterError) {
     if (error.code === 'LIMIT_FILE_SIZE') {
@@ -526,7 +500,6 @@ app.use((error, req, res, next) => {
   });
 });
 
-// Start server
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
