@@ -2,6 +2,79 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
+const containerStyle = {
+  fontFamily: "'Poppins', sans-serif",
+  padding: "40px 15px",
+  maxWidth: "900px",
+  margin: "0 auto",
+};
+
+const cardStyle = {
+  borderRadius: "16px",
+  boxShadow: "0 8px 20px rgba(0,0,0,0.05)",
+  border: "1px solid #eee",
+  backgroundColor: "#fff",
+};
+
+const cardHeaderStyle = {
+  backgroundColor: "#bb2649",
+  color: "#fff",
+  padding: "12px 20px",
+  borderTopLeftRadius: "16px",
+  borderTopRightRadius: "16px",
+  fontWeight: "600",
+  fontSize: "20px",
+};
+
+const formLabelStyle = {
+  fontWeight: "600",
+  color: "#333",
+};
+
+const inputStyle = {
+  borderRadius: "10px",
+  border: "1px solid #ddd",
+  padding: "10px 15px",
+  fontSize: "14px",
+  width: "100%",
+  outline: "none",
+  transition: "border-color 0.3s",
+};
+
+const btnPrimaryStyle = {
+  backgroundColor: "#bb2649",
+  color: "#fff",
+  border: "none",
+  borderRadius: "10px",
+  padding: "10px 20px",
+  fontWeight: "600",
+  cursor: "pointer",
+  transition: "background-color 0.3s",
+  display: "flex",
+  alignItems: "center",
+  gap: "6px",
+};
+
+const btnSecondaryStyle = {
+  backgroundColor: "#6c757d",
+  color: "#fff",
+  border: "none",
+  borderRadius: "10px",
+  padding: "10px 20px",
+  fontWeight: "600",
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  gap: "6px",
+};
+
+const imgThumbnailStyle = {
+  maxWidth: "200px",
+  height: "auto",
+  borderRadius: "12px",
+  boxShadow: "0 4px 10px rgba(0, 0, 0, 0.08)",
+};
+
 export default function Edit() {
   const [post, setPost] = useState({
     title: '',
@@ -26,8 +99,6 @@ export default function Edit() {
       navigate("/login");
       return;
     }
-
-    // Fetch post details
     fetchPost();
   }, [id, navigate]);
 
@@ -77,9 +148,7 @@ export default function Edit() {
 
     try {
       const response = await axios.put(`http://localhost:8081/api/posts/${id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       if (response.data.status === "success") {
@@ -100,7 +169,7 @@ export default function Edit() {
 
   if (loading) {
     return (
-      <div className="container mt-4">
+      <div style={containerStyle}>
         <div className="text-center">
           <div className="spinner-border" role="status">
             <span className="visually-hidden">Loading...</span>
@@ -113,11 +182,15 @@ export default function Edit() {
 
   if (error) {
     return (
-      <div className="container mt-4">
+      <div style={containerStyle}>
         <div className="alert alert-danger">
           <h4>Error</h4>
           <p>{error}</p>
-          <button className="btn btn-primary" onClick={() => navigate("/profile")}>
+          <button
+            className="btn btn-primary"
+            onClick={() => navigate("/profile")}
+            style={{ backgroundColor: "#bb2649", border: "none" }}
+          >
             Back to Profile
           </button>
         </div>
@@ -125,40 +198,58 @@ export default function Edit() {
     );
   }
 
+  // Helper to handle focus styles on inputs/selects
+  const handleFocus = (e) => {
+    e.target.style.borderColor = "#bb2649";
+    e.target.style.boxShadow = "0 0 0 2px rgba(187, 38, 73, 0.2)";
+  };
+  const handleBlur = (e) => {
+    e.target.style.borderColor = "#ddd";
+    e.target.style.boxShadow = "none";
+  };
+
   return (
-    <div className="container mt-4">
+    <div style={containerStyle}>
       <div className="row justify-content-center">
         <div className="col-lg-8">
-          <div className="card">
-            <div className="card-header bg-primary text-white">
+          <div style={cardStyle}>
+            <div style={cardHeaderStyle}>
               <h4 className="mb-0">Edit Post</h4>
             </div>
             <div className="card-body">
               <form onSubmit={handleSubmit}>
                 {/* Title */}
                 <div className="mb-3">
-                  <label htmlFor="title" className="form-label">Title *</label>
+                  <label htmlFor="title" className="form-label" style={formLabelStyle}>
+                    Title *
+                  </label>
                   <input
                     type="text"
-                    className="form-control"
                     id="title"
                     name="title"
                     value={post.title}
                     onChange={handleInputChange}
                     required
+                    style={inputStyle}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                   />
                 </div>
 
                 {/* Category */}
                 <div className="mb-3">
-                  <label htmlFor="category" className="form-label">Category *</label>
+                  <label htmlFor="category" className="form-label" style={formLabelStyle}>
+                    Category *
+                  </label>
                   <select
-                    className="form-control"
                     id="category"
                     name="category"
                     value={post.category}
                     onChange={handleInputChange}
                     required
+                    style={inputStyle}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                   >
                     <option value="">Select Category</option>
                     <option value="Electronics">Electronics</option>
@@ -173,14 +264,18 @@ export default function Edit() {
 
                 {/* Condition */}
                 <div className="mb-3">
-                  <label htmlFor="conditions" className="form-label">Condition *</label>
+                  <label htmlFor="conditions" className="form-label" style={formLabelStyle}>
+                    Condition *
+                  </label>
                   <select
-                    className="form-control"
                     id="conditions"
                     name="conditions"
                     value={post.conditions}
                     onChange={handleInputChange}
                     required
+                    style={inputStyle}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                   >
                     <option value="">Select Condition</option>
                     <option value="New">New</option>
@@ -193,30 +288,38 @@ export default function Edit() {
 
                 {/* Description */}
                 <div className="mb-3">
-                  <label htmlFor="description" className="form-label">Description *</label>
+                  <label htmlFor="description" className="form-label" style={formLabelStyle}>
+                    Description *
+                  </label>
                   <textarea
-                    className="form-control"
                     id="description"
                     name="description"
                     rows="4"
                     value={post.description}
                     onChange={handleInputChange}
                     required
-                  ></textarea>
+                    style={inputStyle}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                  />
                 </div>
 
                 {/* Price */}
                 <div className="mb-3">
-                  <label htmlFor="price" className="form-label">Price (रु) *</label>
+                  <label htmlFor="price" className="form-label" style={formLabelStyle}>
+                    Price (रु) *
+                  </label>
                   <input
                     type="number"
                     step="0.01"
-                    className="form-control"
                     id="price"
                     name="price"
                     value={post.price}
                     onChange={handleInputChange}
                     required
+                    style={inputStyle}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                   />
                 </div>
 
@@ -229,36 +332,42 @@ export default function Edit() {
                     name="negotiable"
                     checked={post.negotiable}
                     onChange={handleInputChange}
+                    style={{ cursor: "pointer" }}
                   />
-                  <label className="form-check-label" htmlFor="negotiable">
+                  <label className="form-check-label" htmlFor="negotiable" style={{ cursor: "pointer", fontWeight: "600", color: "#333" }}>
                     Price is negotiable
                   </label>
                 </div>
 
                 {/* Location */}
                 <div className="mb-3">
-                  <label htmlFor="location" className="form-label">Location *</label>
+                  <label htmlFor="location" className="form-label" style={formLabelStyle}>
+                    Location *
+                  </label>
                   <input
                     type="text"
-                    className="form-control"
                     id="location"
                     name="location"
                     value={post.location}
                     onChange={handleInputChange}
                     required
+                    style={inputStyle}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                   />
                 </div>
 
                 {/* Current Photo Display */}
                 {post.photo && (
                   <div className="mb-3">
-                    <label className="form-label">Current Photo</label>
+                    <label className="form-label" style={formLabelStyle}>
+                      Current Photo
+                    </label>
                     <div>
                       <img
                         src={`http://localhost:8081/uploads/${post.photo}`}
                         alt="Current post"
-                        style={{ maxWidth: "200px", height: "auto" }}
-                        className="img-thumbnail"
+                        style={imgThumbnailStyle}
                       />
                     </div>
                   </div>
@@ -266,28 +375,39 @@ export default function Edit() {
 
                 {/* New Photo Upload */}
                 <div className="mb-3">
-                  <label htmlFor="photo" className="form-label">
+                  <label htmlFor="photo" className="form-label" style={formLabelStyle}>
                     {post.photo ? "Change Photo (optional)" : "Upload Photo *"}
                   </label>
                   <input
                     type="file"
-                    className="form-control"
                     id="photo"
                     name="photo"
                     accept="image/*"
                     onChange={handleFileChange}
+                    style={inputStyle}
                   />
-                  <div className="form-text">
+                  <div className="form-text" style={{ fontSize: "13px", color: "#666" }}>
                     {post.photo ? "Leave empty to keep current photo" : "Please upload a photo"}
                   </div>
                 </div>
 
                 {/* Buttons */}
                 <div className="d-flex gap-2">
-                  <button type="submit" className="btn btn-primary">
+                  <button
+                    type="submit"
+                    style={btnPrimaryStyle}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#9a1d3a")}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#bb2649")}
+                  >
                     <i className="bi bi-save"></i> Update Post
                   </button>
-                  <button type="button" className="btn btn-secondary" onClick={handleCancel}>
+                  <button
+                    type="button"
+                    style={btnSecondaryStyle}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#5a6268")}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#6c757d")}
+                    onClick={handleCancel}
+                  >
                     <i className="bi bi-x-circle"></i> Cancel
                   </button>
                 </div>
