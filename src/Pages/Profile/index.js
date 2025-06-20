@@ -10,11 +10,15 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const handlePostClick = (postId) => {
+    window.open(`/post/${postId}`, "_blank");
+  };
+
   useEffect(() => {
     const checkAuthAndFetchProfile = async () => {
       try {
         const response = await axios.get("http://localhost:8081/api/profile");
-        
+
         if (response.data.status === "success") {
           setProfile(response.data.data);
         } else {
@@ -53,14 +57,16 @@ export default function Profile() {
 
   const handleDelete = async (postId) => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
-    
+
     try {
-      const response = await axios.delete(`http://localhost:8081/api/posts/${postId}`);
+      const response = await axios.delete(
+        `http://localhost:8081/api/posts/${postId}`
+      );
       if (response.data.status === "success") {
-        setProfile(prev => ({
+        setProfile((prev) => ({
           ...prev,
-          posts: prev.posts.filter(post => post.id !== postId),
-          adsPosted: prev.adsPosted - 1
+          posts: prev.posts.filter((post) => post.id !== postId),
+          adsPosted: prev.adsPosted - 1,
         }));
       } else {
         alert(response.data.message || "Failed to delete post");
@@ -78,7 +84,10 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "400px" }}>
+      <div
+        className="container d-flex justify-content-center align-items-center"
+        style={{ minHeight: "400px" }}
+      >
         <div className="text-center">
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
@@ -93,17 +102,33 @@ export default function Profile() {
     fname: "Loading...",
     email: "Loading...",
     adsPosted: 0,
-    posts: []
+    posts: [],
   };
 
   return (
-    <div className="container" style={{ padding: "40px 15px", fontFamily: "'Poppins', sans-serif" }}>
+    <div
+      className="container"
+      style={{ padding: "40px 15px", fontFamily: "'Poppins', sans-serif" }}
+    >
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <button className="btn btn-outline" onClick={handleHome} style={btnOutlineStyle("#bb2649")}>
+        <button
+          className="btn btn-outline"
+          onClick={handleHome}
+          style={btnOutlineStyle("#bb2649")}
+        >
           🏠 Home
         </button>
-        <h1 className="text-center" style={{ color: "#333", fontWeight: "600" }}>My Profile</h1>
-        <button className="btn btn-outline" onClick={handleLogout} style={btnOutlineStyle("#bb2649")}>
+        <h1
+          className="text-center"
+          style={{ color: "#333", fontWeight: "600" }}
+        >
+          My Profile
+        </h1>
+        <button
+          className="btn btn-outline"
+          onClick={handleLogout}
+          style={btnOutlineStyle("#bb2649")}
+        >
           🚪 Logout
         </button>
       </div>
@@ -111,21 +136,29 @@ export default function Profile() {
       <div className="row">
         <div className="col-md-4 mb-4">
           <div className="card" style={cardStyle}>
-            <div className="card-header" style={headerStyle}>User Information</div>
+            <div className="card-header" style={headerStyle}>
+              User Information
+            </div>
             <div className="card-body">
               <div className="d-flex align-items-center mb-3">
                 <div style={iconCircleStyle}>
-                  <i className="bi bi-person-fill" style={{ fontSize: "2rem", color: "#bb2649" }}></i>
+                  <i
+                    className="bi bi-person-fill"
+                    style={{ fontSize: "2rem", color: "#bb2649" }}
+                  ></i>
                 </div>
                 <h4 className="mb-0 ms-3">{userData.fname}</h4>
               </div>
               <ul className="list-group list-group-flush">
                 <li className="list-group-item d-flex justify-content-between">
-                  <span>📧 Email</span><span>{userData.email}</span>
+                  <span>📧 Email</span>
+                  <span>{userData.email}</span>
                 </li>
                 <li className="list-group-item d-flex justify-content-between">
                   <span>📢 Ads Posted</span>
-                  <span className="badge rounded-pill" style={badgeStyle}>{userData.adsPosted}</span>
+                  <span className="badge rounded-pill" style={badgeStyle}>
+                    {userData.adsPosted}
+                  </span>
                 </li>
               </ul>
             </div>
@@ -134,32 +167,62 @@ export default function Profile() {
 
         <div className="col-md-8">
           <div className="card" style={cardStyle}>
-            <div className="card-header" style={headerStyle}>My Ads</div>
+            <div className="card-header" style={headerStyle}>
+              My Ads
+            </div>
             <div className="card-body">
-              <p className="text-muted">Your posted ads will appear here. You can edit or delete them.</p>
+              <p className="text-muted">
+                Your posted ads will appear here. You can edit or delete them.
+              </p>
               {userData.posts.length > 0 ? (
                 <div className="row">
                   {userData.posts.map((post) => (
                     <div className="col-md-6 mb-3" key={post.id}>
-                      <div className="card" style={innerCardStyle}>
+                      <div
+                        className="card"
+                        style={{ ...innerCardStyle, cursor: "pointer" }}
+                        onClick={() => handlePostClick(post.id)}
+                      >
                         <img
                           src={`http://localhost:8081/uploads/${post.photo}`}
                           alt={post.title}
                           className="card-img-top"
-                          style={{ height: "160px", objectFit: "cover", borderTopLeftRadius: "12px", borderTopRightRadius: "12px" }}
+                          style={{
+                            height: "160px",
+                            objectFit: "cover",
+                            borderTopLeftRadius: "12px",
+                            borderTopRightRadius: "12px",
+                          }}
                         />
                         <div className="card-body">
                           <h5 className="card-title">{post.title}</h5>
                           <p className="card-text">
-                            💰 <strong>${parseFloat(post.price).toFixed(2)}</strong><br />
-                            📍 {post.location}<br />
+                            💰{" "}
+                            <strong>
+                              Rs. {parseFloat(post.price).toFixed(2)}
+                            </strong>
+                            <br />
+                            📍 {post.location}
+                            <br />
                             🛠️ {post.conditions}
                           </p>
                           <div className="d-flex justify-content-between">
-                            <Link to={`/edit-post/${post.id}`} className="btn btn-sm" style={btnStyle("#bb2649")}>
+                            <Link
+                              to={`/edit-post/${post.id}`}
+                              className="btn btn-sm"
+                              style={btnStyle("#bb2649")}
+                              onClick={(e) => e.stopPropagation()}
+                            >
                               ✏️ Edit
                             </Link>
-                            <button onClick={() => handleDelete(post.id)} className="btn btn-sm" style={btnStyle("gray")}>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(post.id);
+                              }}
+                              className="btn btn-sm"
+                              style={btnStyle("gray")}
+                            >
                               ❌ Delete
                             </button>
                           </div>
@@ -170,7 +233,8 @@ export default function Profile() {
                 </div>
               ) : (
                 <div className="alert alert-info">
-                  ℹ️ You haven't posted any ads yet. Start by creating your first ad!
+                  ℹ️ You haven't posted any ads yet. Start by creating your
+                  first ad!
                 </div>
               )}
               <Link to="/post" className="btn mt-3" style={btnStyle("#bb2649")}>
@@ -188,14 +252,14 @@ const cardStyle = {
   borderRadius: "16px",
   boxShadow: "0 8px 20px rgba(0,0,0,0.05)",
   border: "1px solid #eee",
-  backgroundColor: "#fff"
+  backgroundColor: "#fff",
 };
 
 const innerCardStyle = {
   borderRadius: "12px",
   border: "1px solid #eee",
   overflow: "hidden",
-  boxShadow: "0 4px 10px rgba(0,0,0,0.05)"
+  boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
 };
 
 const headerStyle = {
@@ -204,13 +268,13 @@ const headerStyle = {
   padding: "12px 16px",
   borderTopLeftRadius: "16px",
   borderTopRightRadius: "16px",
-  fontWeight: "600"
+  fontWeight: "600",
 };
 
 const badgeStyle = {
   backgroundColor: "#ff4d79",
   color: "#fff",
-  padding: "6px 12px"
+  padding: "6px 12px",
 };
 
 const iconCircleStyle = {
@@ -219,7 +283,7 @@ const iconCircleStyle = {
   borderRadius: "50%",
   display: "flex",
   alignItems: "center",
-  justifyContent: "center"
+  justifyContent: "center",
 };
 
 const btnStyle = (color) => ({
@@ -231,7 +295,7 @@ const btnStyle = (color) => ({
   fontWeight: "500",
   fontSize: "14px",
   cursor: "pointer",
-  transition: "background-color 0.3s"
+  transition: "background-color 0.3s",
 });
 
 const btnOutlineStyle = (color) => ({
@@ -242,5 +306,5 @@ const btnOutlineStyle = (color) => ({
   borderRadius: "8px",
   fontWeight: "500",
   cursor: "pointer",
-  transition: "background-color 0.3s"
+  transition: "background-color 0.3s",
 });

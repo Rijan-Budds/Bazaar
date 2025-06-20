@@ -17,7 +17,6 @@ function Posts() {
   }, []);
 
   const handlePostClick = (postId) => {
-    // Open in new tab
     window.open(`/post/${postId}`, '_blank');
   };
 
