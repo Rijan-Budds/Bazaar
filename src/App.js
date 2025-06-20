@@ -8,6 +8,7 @@ import Register from "./Pages/Register";
 import Post from "./Pages/Post";
 import Profile from "./Pages/Profile";
 import Edit from "./Pages/Edit";
+import PostDetail from './Components/Post Detail/PostDetail';
 
 function LayoutWrapper({children}){
   const location = useLocation();
@@ -34,6 +35,7 @@ export default function App(){
       <Route path="/profile" exact={true} element={<Profile />} />
       <Route path="/register" exact={true} element={<Register />} />
       <Route path="/edit-post/:id" exact={true} element={<Edit />} />
+      <Route path="/post/:id" element={<PostDetail />} />
     </Routes>
     </LayoutWrapper>
     </BrowserRouter>

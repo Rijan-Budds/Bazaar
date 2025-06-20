@@ -198,7 +198,6 @@ export default function Edit() {
     );
   }
 
-  // Helper to handle focus styles on inputs/selects
   const handleFocus = (e) => {
     e.target.style.borderColor = "#bb2649";
     e.target.style.boxShadow = "0 0 0 2px rgba(187, 38, 73, 0.2)";

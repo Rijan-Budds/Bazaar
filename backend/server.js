@@ -116,7 +116,7 @@ app.post('/logout', (req, res) => {
       console.error("Session destroy error:", err);
       return res.json({ status: "error", message: "Could not log out properly" });
     }
-    res.clearCookie('connect.sid'); // Clear the session cookie
+    res.clearCookie('connect.sid');
     return res.json({ status: "success", message: "Logged out successfully" });
   });
 });

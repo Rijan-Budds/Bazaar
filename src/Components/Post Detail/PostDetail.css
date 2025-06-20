@@ -1,0 +1,239 @@
+.post-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.post-detail-header {
+  margin-bottom: 30px;
+}
+
+.back-btn {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.back-btn:hover {
+  background-color: #e9ecef;
+}
+
+.post-detail-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.post-image-section {
+  position: sticky;
+  top: 20px;
+}
+
+.post-detail-image {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.post-info-section {
+  padding: 20px 0;
+}
+
+.post-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 20px 0;
+  line-height: 1.2;
+}
+
+.post-price {
+  margin-bottom: 30px;
+}
+
+.price-amount {
+  font-size: 28px;
+  font-weight: bold;
+  color: #007bff;
+  margin-right: 10px;
+}
+
+.price-type {
+  font-size: 16px;
+  color: #666;
+  background-color: #f8f9fa;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.post-details-grid {
+  display: grid;
+  gap: 15px;
+  margin-bottom: 30px;
+  background-color: #f8f9fa;
+  padding: 25px;
+  border-radius: 8px;
+}
+
+.detail-item {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 15px;
+  align-items: center;
+}
+
+.detail-item strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.detail-item span {
+  color: #555;
+}
+
+.post-description-section {
+  margin-bottom: 40px;
+}
+
+.post-description-section h3 {
+  font-size: 22px;
+  color: #333;
+  margin: 0 0 15px 0;
+}
+
+.post-description {
+  line-height: 1.6;
+  color: #555;
+  font-size: 16px;
+  white-space: pre-wrap;
+}
+
+.post-actions {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.contact-seller-btn,
+.save-post-btn,
+.share-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.contact-seller-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.contact-seller-btn:hover {
+  background-color: #0056b3;
+}
+
+.save-post-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.save-post-btn:hover {
+  background-color: #1e7e34;
+}
+
+.share-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.share-btn:hover {
+  background-color: #545b62;
+}
+
+.loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+  color: #666;
+}
+
+.error-container {
+  text-align: center;
+  padding: 50px;
+}
+
+.error-container h2 {
+  color: #dc3545;
+  margin-bottom: 15px;
+}
+
+.error-container p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* Make post cards clickable */
+.post-card.clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.post-card.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.post-description-preview {
+  color: #666;
+  line-height: 1.4;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .post-detail-content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .post-image-section {
+    position: static;
+  }
+  
+  .post-detail-image {
+    height: 250px;
+  }
+  
+  .post-title {
+    font-size: 24px;
+  }
+  
+  .price-amount {
+    font-size: 22px;
+  }
+  
+  .detail-item {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+  
+  .post-actions {
+    flex-direction: column;
+  }
+  
+  .contact-seller-btn,
+  .save-post-btn,
+  .share-btn {
+    width: 100%;
+  }
+}
