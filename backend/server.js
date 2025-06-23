@@ -500,6 +500,38 @@ app.use((error, req, res, next) => {
   });
 });
 
+
+app.get('/api/posts/:id/comments', (req, res) => {
+  const postId = req.params.id;
+  const sql = "SELECT * FROM comments WHERE post_id = ? ORDER BY created_at DESC";
+  db.query(sql, [postId], (err, result) => {
+    if (err) {
+      console.error("Error fetching comments:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.json({ data: result });
+  });
+});
+
+app.post('/api/posts/:id/comments', (req, res) => {
+  const postId = req.params.id;
+  const { content } = req.body;
+
+  if (!req.session.user || !content) {
+    return res.status(400).json({ error: "Login and content required" });
+  }
+
+  const username = req.session.user.fname;
+  const sql = "INSERT INTO comments (post_id, username, content) VALUES (?, ?, ?)";
+  db.query(sql, [postId, username, content], (err, result) => {
+    if (err) {
+      console.error("Error inserting comment:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.json({ message: "Comment added", commentId: result.insertId });
+  });
+});
+
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

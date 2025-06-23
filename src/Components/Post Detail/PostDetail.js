@@ -8,6 +8,9 @@ export default function PostDetail() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("description");
+  const [comments, setComments] = useState([]);
+  const [commentText, setCommentText] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     axios.get(`http://localhost:8081/api/posts/${id}`)
@@ -19,7 +22,31 @@ export default function PostDetail() {
         console.error("Error fetching post:", error);
         setLoading(false);
       });
+
+    axios.get(`http://localhost:8081/api/posts/${id}/comments`)
+      .then(res => setComments(res.data.data))
+      .catch(err => console.error("Error fetching comments:", err));
+
+    axios.get('http://localhost:8081/api/auth/status', { withCredentials: true })
+      .then(res => {
+        if (res.data.authenticated) {
+          setCurrentUser(res.data.user);
+        }
+      }).catch(err => console.error("Auth check failed", err));
   }, [id]);
+
+  const handleCommentSubmit = () => {
+    if (!commentText.trim()) return;
+    axios.post(`http://localhost:8081/api/posts/${id}/comments`, {
+      content: commentText
+    }, { withCredentials: true })
+    .then(() => {
+      setCommentText("");
+      return axios.get(`http://localhost:8081/api/posts/${id}/comments`);
+    })
+    .then(res => setComments(res.data.data))
+    .catch(err => console.error("Error posting comment:", err));
+  };
 
   if (loading) {
     return <div className="loading">Loading...</div>;
@@ -41,10 +68,6 @@ export default function PostDetail() {
                 className="main-image"
               />
             )}
-            <div className="views-info">
-              <span className="views">👁 1 Views</span>
-              <span className="condition">{post.conditions}</span>
-            </div>
           </div>
 
           <div className="product-info">
@@ -80,7 +103,7 @@ export default function PostDetail() {
                   <div className="description-text">
                     <p>{post.description}</p>
                   </div>
-                  
+
                   <div className="general-section">
                     <h3>General</h3>
                     <div className="info-grid">
@@ -115,12 +138,34 @@ export default function PostDetail() {
 
               {activeTab === 'comments' && (
                 <div className="comments-content">
-                  <div className="no-comments">
-                    <p>No comments yet. Be the first to comment!</p>
+                  {currentUser ? (
                     <div className="comment-form">
-                      <textarea placeholder="Write your comment here..." rows="4"></textarea>
-                      <button className="submit-comment">Post Comment</button>
+                      <textarea
+                        placeholder="Write your comment here..."
+                        rows="4"
+                        value={commentText}
+                        onChange={e => setCommentText(e.target.value)}
+                      />
+                      <button className="submit-comment" onClick={handleCommentSubmit}>
+                        Post Comment
+                      </button>
                     </div>
+                  ) : (
+                    <p>Please log in to post a comment.</p>
+                  )}
+
+                  <div className="comment-list">
+                    {comments.length === 0 ? (
+                      <p>No comments yet. Be the first to comment!</p>
+                    ) : (
+                      comments.map(comment => (
+                        <div key={comment.id} className="comment-item">
+                          <strong>{comment.username}</strong>
+                          <p>{comment.content}</p>
+                          <span className="comment-date">{new Date(comment.created_at).toLocaleString()}</span>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               )}
@@ -144,11 +189,10 @@ export default function PostDetail() {
             </div>
             <div className="seller-info">
               <h3 className="seller-name">{post.seller_name || 'Unknown Seller'}</h3>
-              <p className="seller-stats">1 Ads</p>
-              <p className="seller-id">ID: {post.user_id}</p>
+              <p className="seller-id">User-ID: {post.user_id}</p>
             </div>
           </div>
-          
+
           <div className="safety-note">
             <p><strong>Note:</strong> We recommend you to physically inspect the product/Service before making payment. Avoid paying fees or advance payment to sellers.</p>
           </div>
