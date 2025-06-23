@@ -58,6 +58,7 @@ const PostCreation = () => {
       if (!post.description.trim())
         newErrors.description = "Description is required";
     }
+    
     if (currentStep === 3) {
       if (!post.location.trim()) newErrors.location = "Location is required";
     }
@@ -75,6 +76,17 @@ const PostCreation = () => {
 
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleNumberInput = (e) => {
+    // Allow only numbers, decimal point, and backspace/delete
+    const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight'];
+    const isNumber = /[0-9]/.test(e.key);
+    const isDecimal = e.key === '.' && !e.target.value.includes('.');
+    
+    if (!isNumber && !isDecimal && !allowedKeys.includes(e.key)) {
+      e.preventDefault();
     }
   };
 
@@ -149,6 +161,9 @@ const PostCreation = () => {
     }
     if (step === 2) {
       return post.category && post.conditions && post.description.trim();
+    }
+    if (step === 3) {
+      return post.location.trim();
     }
     return true;
   };
@@ -278,28 +293,44 @@ const PostCreation = () => {
           </div>
         </div>
       )}
+
       {step === 3 && (
         <div className="step">
-          <h2>Location </h2>
-          <input
-            type="text"
+          <h2>Location</h2>
+          <select
             name="location"
             value={post.location}
             onChange={handleChange}
-            placeholder="Location"
             required
             className={errors.location ? "error" : ""}
-          />
+          >
+            <option value="">Select a location</option>
+            <option value="Kathmandu">Kathmandu</option>
+            <option value="Lalitpur">Lalitpur</option>
+            <option value="Bhaktapur">Bhaktapur</option>
+            <option value="Pokhara">Pokhara</option>
+            <option value="Biratnagar">Biratnagar</option>
+            <option value="Butwal">Butwal</option>
+            <option value="Dharan">Dharan</option>
+            <option value="Chitwan">Chitwan</option>
+          </select>
           {errors.location && (
             <span className="error-message">{errors.location}</span>
           )}
 
           <div className="button-group">
             <button onClick={prevStep}>Back</button>
-            <button onClick={nextStep}>Next</button>
+            <button
+              onClick={nextStep}
+              disabled={!isStepValid()}
+              className={!isStepValid() ? "disabled" : ""}
+            >
+              Next
+            </button>
           </div>
         </div>
       )}
+
       {step === 4 && (
         <div className="step">
           <h2>Pricing</h2>
@@ -308,8 +339,10 @@ const PostCreation = () => {
             name="price"
             value={post.price}
             onChange={handleChange}
+            onKeyDown={handleNumberInput}
             placeholder="Price"
             step="0.01"
+            min="0"
             required
           />
           <label>

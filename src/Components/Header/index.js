@@ -5,7 +5,6 @@ import { FaMessage } from "react-icons/fa6";
 import { IoIosAddCircle } from "react-icons/io";
 import SearchBox from "./SearchBox";
 import Button from "@mui/material/Button";
-import Navigation from "./Navigation";
 import Category from "./Category";
 import AlertGif from "../../assets/alert.gif";
 
@@ -71,7 +70,6 @@ const Header = () => {
           />
         </div>
 
-        <Navigation />
       </div>
     </>
   );
