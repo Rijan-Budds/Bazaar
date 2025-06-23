@@ -9,6 +9,7 @@ import Post from "./Pages/Post";
 import Profile from "./Pages/Profile";
 import Edit from "./Pages/Edit";
 import PostDetail from './Components/Post Detail/PostDetail';
+import SearchResults from "./Components/Header/SearchBox/SearchResult";
 
 function LayoutWrapper({children}){
   const location = useLocation();
@@ -36,6 +37,7 @@ export default function App(){
       <Route path="/register" exact={true} element={<Register />} />
       <Route path="/edit-post/:id" exact={true} element={<Edit />} />
       <Route path="/post/:id" element={<PostDetail />} />
+      <Route path="/search" element={<SearchResults />} />
     </Routes>
     </LayoutWrapper>
     </BrowserRouter>

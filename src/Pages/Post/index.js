@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+// Set default axios config for credentials
+axios.defaults.withCredentials = true;
 
 const PostCreation = () => {
   const [step, setStep] = useState(1);
@@ -12,21 +16,32 @@ const PostCreation = () => {
     location: "",
     price: "",
     negotiable: false,
-    user_id: "" 
   });
   const [preview, setPreview] = useState("");
   const [errors, setErrors] = useState({});
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
+  // Check authentication status with the backend
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const checkAuth = async () => {
+      try {
+        const response = await axios.get("http://localhost:8081/api/auth/status", {
+          withCredentials: true
+        });
+        
+        if (response.data.authenticated) {
+          setIsAuthenticated(true);
+        } else {
+          navigate("/login");
+        }
+      } catch (error) {
+        console.error("Auth check failed:", error);
+        navigate("/login");
+      }
+    };
     
-    if (!isLoggedIn) {
-      navigate("/login");
-    } else if (userData) {
-      setPost(prev => ({ ...prev, user_id: userData.id }));
-    }
+    checkAuth();
   }, [navigate]);
 
   const validateStep = (currentStep) => {
@@ -94,29 +109,36 @@ const PostCreation = () => {
     if (validateStep(3)) {
       const formData = new FormData();
       
-      Object.keys(post).forEach((key) => {
-        if (key === "negotiable") {
-          formData.append(key, post[key] ? "1" : "0");
-        } else {
-          formData.append(key, post[key]);
-        }
-      });
+      // Don't send user_id - backend gets it from session
+      formData.append('title', post.title);
+      formData.append('photo', post.photo);
+      formData.append('category', post.category);
+      formData.append('conditions', post.conditions);
+      formData.append('description', post.description);
+      formData.append('location', post.location);
+      formData.append('price', post.price);
+      formData.append('negotiable', post.negotiable ? 'true' : 'false');
+
+      console.log('Submitting post...'); // Debug log
 
       try {
-        const response = await fetch("http://localhost:8081/api/posts", {
-          method: "POST",
-          body: formData,
-          credentials: "include",
+        const response = await axios.post("http://localhost:8081/api/posts", formData, {
+          withCredentials: true, // Essential for session cookies
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         });
         
-        if (response.ok) {
-          navigate("/");
-        } else {
-          const errorData = await response.json();
-          console.error("Error creating post:", errorData.message);
-        }
+        console.log('Post created successfully:', response.data);
+        navigate("/");
       } catch (error) {
-        console.error("Network error:", error);
+        console.error("Error creating post:", error);
+        if (error.response) {
+          console.error("Error response:", error.response.data);
+          alert(`Error: ${error.response.data.message || 'Failed to create post'}`);
+        } else {
+          alert('Network error occurred');
+        }
       }
     }
   };
@@ -130,6 +152,11 @@ const PostCreation = () => {
     }
     return true;
   };
+
+  // Don't render form until authentication is verified
+  if (!isAuthenticated) {
+    return <div>Checking authentication...</div>;
+  }
 
   return (
     <div className="post-creation">
@@ -188,24 +215,24 @@ const PostCreation = () => {
             className={errors.category ? "error" : ""}
           >
             <option value="">Select Category</option>
-            <option value="electronics">Apparels & Accessories</option>
-            <option value="furniture">Automobiles</option>
-            <option value="clothing">Beauty and health</option>
-            <option value="clothing">Books and learning</option>
-            <option value="clothing">Business and industry</option>
-            <option value="clothing">Computers and peripherals</option>
-            <option value="clothing">Electronics, TVs and more</option>
-            <option value="clothing">Events and Happenings</option>
-            <option value="clothing">Jobs</option>
-            <option value="clothing">Music Instruments</option>
-            <option value="clothing">Mobile Phones and Accessories</option>
-            <option value="clothing">Pets for adoption</option>
-            <option value="clothing">Toys and video games</option>
-            <option value="clothing">Travel, Tours and Packages</option>
-            <option value="clothing">Services</option>
-            <option value="clothing">Furnishing and Appliances</option>
-            <option value="clothing">Fresh vegetables and meat</option>
-            <option value="clothing">Want to buy</option>
+            <option value="Apparels & Accessories">Apparels & Accessories</option>
+            <option value="Automobiles">Automobiles</option>
+            <option value="Beauty and health">Beauty and health</option>
+            <option value="Books and learning">Books and learning</option>
+            <option value="Business and industry">Business and industry</option>
+            <option value="Computers and peripherals">Computers and peripherals</option>
+            <option value="Electronics, TVs and more">Electronics, TVs and more</option>
+            <option value="Events and Happenings">Events and Happenings</option>
+            <option value="Jobs">Jobs</option>
+            <option value="Music Instruments">Music Instruments</option>
+            <option value="Mobile Phones and Accessories">Mobile Phones and Accessories</option>
+            <option value="Pets for adoption">Pets for adoption</option>
+            <option value="Toys and video games">Toys and video games</option>
+            <option value="Travel, Tours and Packages">Travel, Tours and Packages</option>
+            <option value="Services">Services</option>
+            <option value="Furnishing and Appliances">Furnishing and Appliances</option>
+            <option value="Fresh vegetables and meat">Fresh vegetables and meat</option>
+            <option value="Want to buy">Want to buy</option>
           </select>
           {errors.category && (
             <span className="error-message">{errors.category}</span>

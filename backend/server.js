@@ -532,6 +532,31 @@ app.post('/api/posts/:id/comments', (req, res) => {
   });
 });
 
+app.get('/api/search', (req, res) => {
+  const q = req.query.q;
+  if (!q) {
+    return res.status(400).json({ status: "error", message: "Missing search query" });
+  }
+
+  const sql = `
+    SELECT posts.*, login.fname AS seller_name
+    FROM posts
+    LEFT JOIN login ON posts.user_id = login.id
+    WHERE posts.title LIKE ? OR posts.description LIKE ? OR posts.category LIKE ?
+    ORDER BY posts.created_at DESC
+  `;
+
+  const searchTerm = `%${q}%`;
+  db.query(sql, [searchTerm, searchTerm, searchTerm], (err, results) => {
+    if (err) {
+      console.error("Search error:", err);
+      return res.status(500).json({ status: "error", message: "Database error" });
+    }
+    return res.json({ status: "success", data: results });
+  });
+});
+
+
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

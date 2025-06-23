@@ -1,0 +1,49 @@
+.search-results {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.results-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.result-card {
+  display: flex;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.result-card:hover {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.result-image {
+  width: 140px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-right: 1rem;
+}
+
+.result-details h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.result-details p {
+  margin: 0.2rem 0;
+  font-size: 0.9rem;
+}
+
+.posted-info {
+  font-size: 0.8rem;
+  color: gray;
+}
