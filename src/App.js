@@ -10,6 +10,7 @@ import Profile from "./Pages/Profile";
 import Edit from "./Pages/Edit";
 import PostDetail from './Components/Post Detail/PostDetail';
 import SearchResults from "./Components/Header/SearchBox/SearchResult";
+import AdminPage from "./Pages/Admin"
 
 function LayoutWrapper({children}){
   const location = useLocation();
@@ -38,6 +39,7 @@ export default function App(){
       <Route path="/edit-post/:id" exact={true} element={<Edit />} />
       <Route path="/post/:id" element={<PostDetail />} />
       <Route path="/search" element={<SearchResults />} />
+      <Route path="/admin" element={<AdminPage />} />
     </Routes>
     </LayoutWrapper>
     </BrowserRouter>

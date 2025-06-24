@@ -16,7 +16,9 @@ export default function Login() {
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        const response = await axios.get("http://localhost:8081/api/auth/status");
+        const response = await axios.get(
+          "http://localhost:8081/api/auth/status"
+        );
         if (response.data.authenticated) {
           navigate("/profile");
         }
@@ -47,11 +49,24 @@ export default function Login() {
       return;
     }
 
+    // ======= Added admin credentials check here =======
+    if (
+      fname.trim() === "admin" &&
+      username.trim() === "admin@admin.com" &&
+      password.trim() === "admin"
+    ) {
+      setLoading(false);
+      navigate("/admin");
+      return;
+    }
+
+    // ==================================================
+
     try {
       const response = await axios.post("http://localhost:8081/login", {
         fname: fname.trim(),
         username: username.trim(),
-        password: password.trim()
+        password: password.trim(),
       });
 
       console.log("Login response:", response.data);
@@ -59,11 +74,13 @@ export default function Login() {
       if (response.data.status === "success") {
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("user", JSON.stringify(response.data.user));
-        
+
         navigate("/profile");
       } else {
         if (response.data.status === "no_record") {
-          setError("Invalid credentials. Please check your username and password.");
+          setError(
+            "Invalid credentials. Please check your username and password."
+          );
         } else {
           setError(response.data.message || "Login failed. Please try again.");
         }
@@ -71,7 +88,9 @@ export default function Login() {
     } catch (error) {
       console.error("Login error:", error);
       if (error.response) {
-        setError(error.response.data.message || "Login failed. Please try again.");
+        setError(
+          error.response.data.message || "Login failed. Please try again."
+        );
       } else if (error.request) {
         setError("Unable to connect to server. Please check your connection.");
       } else {
@@ -89,15 +108,15 @@ export default function Login() {
     >
       <div className="login-container" style={containerStyle}>
         <div className="d-flex justify-content-between mb-3">
-          <button 
-            onClick={handleHome} 
+          <button
+            onClick={handleHome}
             className="btn btn-outline-secondary"
             disabled={loading}
           >
             <i className="bi bi-house-door"></i> Home
           </button>
         </div>
-        
+
         <div className="text-center mb-4">
           <h2 style={{ color: "#333", fontWeight: "600" }}>Welcome Back</h2>
           <p className="text-muted">Please sign in to your account</p>
@@ -162,15 +181,19 @@ export default function Login() {
             />
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="btn btn-primary w-100 mb-3"
             disabled={loading}
             style={buttonStyle}
           >
             {loading ? (
               <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
                 Signing in...
               </>
             ) : (
@@ -184,8 +207,8 @@ export default function Login() {
 
         <div className="text-center">
           <p className="text-muted mb-2">Don't have an account?</p>
-          <button 
-            onClick={handleRegister} 
+          <button
+            onClick={handleRegister}
             className="btn btn-outline-primary"
             disabled={loading}
             style={outlineButtonStyle}
@@ -206,7 +229,7 @@ const containerStyle = {
   boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
   width: "100%",
   maxWidth: "400px",
-  border: "1px solid #e3e6f0"
+  border: "1px solid #e3e6f0",
 };
 
 const inputStyle = {
@@ -214,7 +237,7 @@ const inputStyle = {
   borderRadius: "8px",
   border: "1px solid #d1d3e2",
   fontSize: "14px",
-  transition: "border-color 0.3s, box-shadow 0.3s"
+  transition: "border-color 0.3s, box-shadow 0.3s",
 };
 
 const buttonStyle = {
@@ -224,7 +247,7 @@ const buttonStyle = {
   borderRadius: "8px",
   fontWeight: "600",
   fontSize: "16px",
-  transition: "all 0.3s"
+  transition: "all 0.3s",
 };
 
 const outlineButtonStyle = {
@@ -233,5 +256,5 @@ const outlineButtonStyle = {
   padding: "10px 24px",
   borderRadius: "8px",
   fontWeight: "500",
-  transition: "all 0.3s"
+  transition: "all 0.3s",
 };
