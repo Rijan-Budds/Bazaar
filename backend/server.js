@@ -555,6 +555,14 @@ app.get('/api/search', (req, res) => {
     return res.json({ status: "success", data: results });
   });
 });
+// Node.js (Express)
+app.get("/api/admin/posts", (req, res) => {
+  const query = "SELECT * FROM posts ORDER BY created_at DESC";
+  db.query(query, (err, results) => {
+    if (err) return res.status(500).json({ status: "error", message: "DB Error" });
+    res.json({ status: "success", data: results });
+  });
+});
 
 
 const PORT = process.env.PORT || 8081;
