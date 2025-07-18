@@ -22,40 +22,90 @@ app.use(session({
 
 const corsOptions = {
   origin: 'http://localhost:3000',
-  credentials: true, 
+  credentials: true,
 };
 app.use(cors(corsOptions));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 let db;
-function handleDbConnection() {
+
+// Connect without DB for migration
+function connectForMigration() {
+  return mysql.createConnection({
+    host: 'localhost',
+    user: 'phpmyadmin',
+    password: 'root',
+    multipleStatements: true,
+  });
+}
+
+// Connect with DB after migration
+function connectToAppDb() {
   db = mysql.createConnection({
     host: 'localhost',
     user: 'phpmyadmin',
-    password: 'Rijan@123',
-    database: 'Crud'
+    password: 'root',
+    database: 'Crud',
   });
 
   db.connect(err => {
     if (err) {
-      console.error('Error connecting to DB:', err);
-      setTimeout(handleDbConnection, 2000);
+      console.error('Error connecting to Crud database:', err);
+      setTimeout(connectToAppDb, 2000);
     } else {
-      console.log('Connected to MySQL database.');
+      console.log('Connected to Crud database.');
+      startServer();
     }
   });
 
   db.on('error', err => {
     if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-      handleDbConnection();
+      connectToAppDb();
     } else {
       throw err;
     }
   });
 }
-handleDbConnection();
 
+// Run migration
+function runMigration(migrationDb) {
+  const migrationSQL = fs.readFileSync('./migrations/init.sql', 'utf8');
+  migrationDb.query(migrationSQL, (err) => {
+    if (err) {
+      console.error('❌ Migration failed:', err.message);
+      process.exit(1);
+    } else {
+      console.log('✅ Database migration complete');
+      migrationDb.end();
+      connectToAppDb();
+    }
+  });
+}
+
+// Start server after DB connection
+function startServer() {
+  const PORT = process.env.PORT || 8081;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
+// Start migration first
+const migrationDb = connectForMigration();
+migrationDb.connect(err => {
+  if (err) {
+    console.error('Error connecting to MySQL for migration:', err);
+    process.exit(1);
+  } else {
+    console.log('Connected to MySQL for migration');
+    runMigration(migrationDb);
+  }
+});
+
+// ========== ROUTES ==========
+
+// Middleware for protected routes
 const requireAuth = (req, res, next) => {
   if (!req.session.user) {
     return res.status(401).json({ 
@@ -66,6 +116,7 @@ const requireAuth = (req, res, next) => {
   next();
 };
 
+// LOGIN
 app.post('/login', (req, res) => {
   const { fname, username, password } = req.body;
   
@@ -110,6 +161,7 @@ app.post('/login', (req, res) => {
   });
 });
 
+// LOGOUT
 app.post('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -121,6 +173,7 @@ app.post('/logout', (req, res) => {
   });
 });
 
+// REGISTER
 app.post('/register', (req, res) => {
   const { fname, username, password } = req.body;
   
@@ -146,7 +199,7 @@ app.post('/register', (req, res) => {
     }
 
     const insertSql = "INSERT INTO login (fname, username, password) VALUES (?, ?, ?)";
-    db.query(insertSql, [fname, username, password], (err, result) => {
+    db.query(insertSql, [fname, username, password], (err) => {
       if (err) {
         console.error("Insert error:", err);
         return res.json({ status: "error", message: "Failed to register user" });
@@ -159,6 +212,7 @@ app.post('/register', (req, res) => {
   });
 });
 
+// MULTER SETUP FOR FILE UPLOAD
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadPath = 'uploads/';
@@ -176,9 +230,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
   storage: storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024 
-  },
+  limits: { fileSize: 5 * 1024 * 1024 }, 
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
@@ -192,6 +244,7 @@ const upload = multer({
   }
 });
 
+// CREATE POST
 app.post('/api/posts', requireAuth, upload.single('photo'), (req, res) => {
   const { title, category, conditions, description, price, negotiable, location } = req.body;
   const photo = req.file ? req.file.filename : null;
@@ -237,6 +290,7 @@ app.post('/api/posts', requireAuth, upload.single('photo'), (req, res) => {
   });
 });
 
+// GET POST BY ID
 app.get('/api/posts/:id', (req, res) => {
   const postId = req.params.id;
   
@@ -277,6 +331,7 @@ app.get('/api/posts/:id', (req, res) => {
   });
 });
 
+// UPDATE POST
 app.put('/api/posts/:id', requireAuth, upload.single('photo'), (req, res) => {
   const postId = req.params.id;
   const userId = req.session.user.id;
@@ -328,7 +383,7 @@ app.put('/api/posts/:id', requireAuth, upload.single('photo'), (req, res) => {
       userId
     ];
 
-    db.query(updateSql, values, (err, result) => {
+    db.query(updateSql, values, (err) => {
       if (err) {
         console.error("Update error:", err);
         return res.json({ 
@@ -357,6 +412,7 @@ app.put('/api/posts/:id', requireAuth, upload.single('photo'), (req, res) => {
   });
 });
 
+// GET ALL POSTS
 app.get('/api/posts', (req, res) => {
   const sql = `
     SELECT posts.*, login.fname as seller_name
@@ -377,6 +433,7 @@ app.get('/api/posts', (req, res) => {
   });
 });
 
+// DELETE POST
 app.delete('/api/posts/:id', requireAuth, (req, res) => {
   const postId = req.params.id;
   const userId = req.session.user.id;
@@ -424,6 +481,7 @@ app.delete('/api/posts/:id', requireAuth, (req, res) => {
   });
 });
 
+// GET PROFILE + USER'S POSTS
 app.get('/api/profile', requireAuth, (req, res) => {
   const userId = req.session.user.id; 
   
@@ -469,6 +527,7 @@ app.get('/api/profile', requireAuth, (req, res) => {
   });
 });
 
+// AUTH STATUS
 app.get('/api/auth/status', (req, res) => {
   if (req.session.user) {
     return res.json({ 
@@ -484,6 +543,7 @@ app.get('/api/auth/status', (req, res) => {
   }
 });
 
+// ERROR HANDLER FOR MULTER AND OTHERS
 app.use((error, req, res, next) => {
   if (error instanceof multer.MulterError) {
     if (error.code === 'LIMIT_FILE_SIZE') {
@@ -500,7 +560,7 @@ app.use((error, req, res, next) => {
   });
 });
 
-
+// COMMENTS GET
 app.get('/api/posts/:id/comments', (req, res) => {
   const postId = req.params.id;
   const sql = "SELECT * FROM comments WHERE post_id = ? ORDER BY created_at DESC";
@@ -513,6 +573,7 @@ app.get('/api/posts/:id/comments', (req, res) => {
   });
 });
 
+// COMMENTS POST
 app.post('/api/posts/:id/comments', (req, res) => {
   const postId = req.params.id;
   const { content } = req.body;
@@ -532,6 +593,7 @@ app.post('/api/posts/:id/comments', (req, res) => {
   });
 });
 
+// SEARCH
 app.get('/api/search', (req, res) => {
   const q = req.query.q;
   if (!q) {
@@ -542,43 +604,16 @@ app.get('/api/search', (req, res) => {
     SELECT posts.*, login.fname AS seller_name
     FROM posts
     LEFT JOIN login ON posts.user_id = login.id
-    WHERE posts.title LIKE ? OR posts.description LIKE ? OR posts.category LIKE ?
+    WHERE posts.title LIKE ? OR posts.description LIKE ?
     ORDER BY posts.created_at DESC
   `;
 
-  const searchTerm = `%${q}%`;
-  db.query(sql, [searchTerm, searchTerm, searchTerm], (err, results) => {
+  const wildcardQ = `%${q}%`;
+  db.query(sql, [wildcardQ, wildcardQ], (err, results) => {
     if (err) {
       console.error("Search error:", err);
       return res.status(500).json({ status: "error", message: "Database error" });
     }
-    return res.json({ status: "success", data: results });
+    res.json(results);
   });
-});
-// Node.js (Express)
-app.get("/api/admin/posts", (req, res) => {
-  const query = "SELECT * FROM posts ORDER BY created_at DESC";
-  db.query(query, (err, results) => {
-    if (err) return res.status(500).json({ status: "error", message: "DB Error" });
-    res.json({ status: "success", data: results });
-  });
-});
-
-//migrating database
-const runMigration = () => {
-  const migrationSQL = fs.readFileSync('./migrations/init.sql', 'utf8');
-  db.query(migrationSQL, (err, results) => {
-    if (err) {
-      console.error('❌ Migration failed:', err.message);
-    } else {
-      console.log('✅ Database migration complete');
-    }
-  });
-};
-
-runMigration();
-
-const PORT = process.env.PORT || 8081;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
 });
