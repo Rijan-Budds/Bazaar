@@ -564,6 +564,19 @@ app.get("/api/admin/posts", (req, res) => {
   });
 });
 
+//migrating database
+const runMigration = () => {
+  const migrationSQL = fs.readFileSync('./migrations/init.sql', 'utf8');
+  db.query(migrationSQL, (err, results) => {
+    if (err) {
+      console.error('❌ Migration failed:', err.message);
+    } else {
+      console.log('✅ Database migration complete');
+    }
+  });
+};
+
+runMigration();
 
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
