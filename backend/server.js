@@ -33,9 +33,9 @@ let db;
 // Connect without DB for migration
 function connectForMigration() {
   return mysql.createConnection({
-    host: 'localhost',
-    user: 'phpmyadmin',
-    password: 'root',
+    host: '127.0.0.1',
+    user: 'root',
+    password: 'StrongRoot@123',
     multipleStatements: true,
   });
 }
@@ -43,9 +43,9 @@ function connectForMigration() {
 // Connect with DB after migration
 function connectToAppDb() {
   db = mysql.createConnection({
-    host: 'localhost',
-    user: 'phpmyadmin',
-    password: 'root',
+    host: '127.0.0.1',
+    user: 'root',
+    password: 'StrongRoot@123',
     database: 'Crud',
   });
 
